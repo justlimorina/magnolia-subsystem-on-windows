@@ -128,10 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Commands.cpp" />
+    <ClCompile Include="Evaluator.cpp" />
+    <ClCompile Include="History.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="Evaluator.h" />
+    <ClInclude Include="History.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

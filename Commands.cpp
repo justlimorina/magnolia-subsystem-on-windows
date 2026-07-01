@@ -1,9 +1,14 @@
 #include "Commands.h"
 #include <iostream>
 #include <sstream>
-float a, b, result;
-char operation;
-char choice;
+#include "Evaluator.h"
+#include "History.h"
+#include <iomanip>
+#include <algorithm>
+#include <cctype>
+
+static History g_history(200);
+static int g_precision = 6;
 
 namespace MagnoliaOS {
     void executeEcho(const std::string& args) {
@@ -29,53 +34,67 @@ namespace MagnoliaOS {
 		std::cout << "|---------------------|\n";
 
 		while (true) {
-			std::cout << "Enter an expression (e.g., 2 + 2) or 'exit' to return: ";
-			// Read the whole line so user can type 'exit' or a full expression
+			std::cout << "Enter an expression (e.g., 2 + 2), commands: 'history', '!n', 'prec N', or 'exit' to return:\n";
 			std::string line;
-			if (!std::getline(std::cin, line)) return; // EOF or error
-			if (line == "exit") return;
+			if (!std::getline(std::cin, line)) return;
 			if (line.empty()) continue;
+			// trim trailing and leading whitespace
+			line.erase(line.find_last_not_of(" \t\n\r") + 1);
+			size_t start = line.find_first_not_of(" \t\n\r");
+			if (start != std::string::npos) line = line.substr(start);
+			if (line == "exit") return;
 
-			std::stringstream ss(line);
-			if (!(ss >> a >> operation >> b)) {
-				std::cout << "Error: Failed to parse expression. Use format: <num> <op> <num>\n";
+			// history
+			if (line == "history") {
+				auto entries = g_history.list();
+				if (entries.empty()) std::cout << "History is empty.\n";
+				else {
+					for (size_t i = 0; i < entries.size(); ++i) std::cout << (i+1) << ": " << entries[i] << "\n";
+				}
 				continue;
 			}
 
-			if (operation == '+') {
-				result = a + b;
+			// recall !n
+			if (!line.empty() && line[0] == '!') {
+				try {
+					int idx = std::stoi(line.substr(1));
+					if (idx <= 0 || static_cast<size_t>(idx) > g_history.size()) { std::cout << "Invalid history index.\n"; continue; }
+					line = g_history.get(static_cast<size_t>(idx-1));
+					std::cout << "Recalling: " << line << "\n";
+				} catch (...) { std::cout << "Invalid recall format. Use !n\n"; continue; }
 			}
-			else if (operation == '-') {
-				result = a - b;
-			}
-			else if (operation == '*') {
-				result = a * b;
-			}
-			else if (operation == '/') {
-				if (b != 0) {
-					result = a / b;
-				}
-				else {
-					std::cout << "Error: Division by zero is not allowed.\n";
+
+			// precision command
+			{
+				std::string tmp = line;
+				std::transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+				if (tmp.rfind("prec ",0) == 0 || tmp.rfind("precision ",0) == 0) {
+					size_t pos = tmp.find(' ');
+					if (pos != std::string::npos) {
+						std::string val = tmp.substr(pos+1);
+						try { int p = std::stoi(val); if (p >= 0 && p <= 15) { g_precision = p; std::cout << "Precision set to " << g_precision << "\n"; } else std::cout << "Precision out of range (0-15).\n"; }
+						catch (...) { std::cout << "Invalid precision value.\n"; }
+					}
 					continue;
 				}
 			}
-			else {
-				std::cout << "Error: Invalid operation. Please use +, -, *, or /.\n";
-				continue;
-			}
 
-			std::cout << "Result: " << result << "\n";
+			// evaluate
+			double value = 0.0;
+			std::string err;
+			if (!evaluateExpression(line, value, err)) { std::cout << "Error: " << err << "\n"; continue; }
+			g_history.add(line);
+			std::cout << "Result: " << std::fixed << std::setprecision(g_precision) << value << "\n";
 
-			// Ask whether to continue
+			// continue prompt
 			std::string resp;
 			while (true) {
 				std::cout << "Do you want to perform another calculation? (y/n): ";
 				if (!std::getline(std::cin, resp)) return;
 				if (resp.empty()) continue;
 				char c = resp[0];
-				if (c == 'y' || c == 'Y' || c=='c' || c=='C' || c=='yes' || c=='Yes' || c =='YES') break; // continue outer loop
-				if (c == 'n' || c == 'N' || c== 'no' || c=='NO' || c=='No') return; // exit calculator
+				if (c == 'y' || c == 'Y') break;
+				if (c == 'n' || c == 'N') return;
 				if (resp == "exit") return;
 				std::cout << "Please enter 'y' or 'n'.\n";
 			}
