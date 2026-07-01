@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="magnolia-subsystem-on-windows.vcxproj" Id="109ae165-02be-4a61-a6af-9869d3a1d7cc" />
+</Solution>

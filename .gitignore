@@ -1,0 +1,77 @@
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+build/
+Debug/
+Release/
+x64/Debug/
+x64/Release/
+
+# Visual C++ generated files
+*.idb
+*.pdb
+*.ipch
+*.aps
+*.ncb
+*.opendb
+*.VC.db
+*.VC.opendb
+
+# Visual Studio Code
+.vscode/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+
+# Executables
+*.exe
+*.dll
+*.ilk
+*.meta
+*.obj
+*.lib
+*.exp
+
+# Others
+*.log
+*.vspscc
+*.vsscc
+
+# JetBrains Rider
+.idea/
+
+# Temporary files
+*~
+*.tmp
+
+# Ignore local secrets
+.env
+
+# Uncomment if you have Visual Studio Code workspace settings you don't want to check in
+# .vscode/*
+# !.vscode/settings.json
