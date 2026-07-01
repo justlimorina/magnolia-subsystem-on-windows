@@ -74,8 +74,8 @@ namespace MagnoliaOS {
 				if (!std::getline(std::cin, resp)) return;
 				if (resp.empty()) continue;
 				char c = resp[0];
-				if (c == 'y' || c == 'Y' || c=='c' || c=='C') break; // continue outer loop
-				if (c == 'n' || c == 'N') return; // exit calculator
+				if (c == 'y' || c == 'Y' || c=='c' || c=='C' || c=='yes' || c=='Yes' || c =='YES') break; // continue outer loop
+				if (c == 'n' || c == 'N' || c== 'no' || c=='NO' || c=='No') return; // exit calculator
 				if (resp == "exit") return;
 				std::cout << "Please enter 'y' or 'n'.\n";
 			}
